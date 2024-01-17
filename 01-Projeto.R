@@ -80,6 +80,10 @@ head(dados)
 # verificando valores ausentes nas colunas
 colSums(is.na(dados))
 
+# Remover todas as linhas com dados NA na coluna PIB_Log
+colSums(is.na(dados))
+dados <- dados[complete.cases(dados$PIB_Log), ]
+
 # Dimensões (nº de linhas e colunas)
 dim(dados)
 
@@ -95,7 +99,8 @@ dados <- mutate_if(dados, colunas_chr, as.factor)
 
 
 
-# Pergunta 1
+
+## Pergunta 1
 
 # - O Aumento do PIB per capita de um país afeta positivamente a expectativa de vida dos cidadãos ao nascer?
 #   Qual a correlação entre as duas variáveis ?
@@ -107,13 +112,14 @@ dados_1 <- dados %>%
 colSums(is.na(dados_1))
 dados_1 <- na.omit(dados_1)
 dados_1$Ano <- as.factor(dados_1$Ano)
-
-# Sumário estatístico
 summary(dados_1)
+
+
 
 
 # Verificando a Correlação de Pearson entre duas variáveis
 cor(dados_1$PIB_Log, dados_1$Expectativa_Saudavel_de_Vida_ao_Nascer, method = "pearson")  # 0.8331619
+cor.test(dados_1$PIB_Log, dados_1$Expectativa_Saudavel_de_Vida_ao_Nascer, method = "pearson")
 
 # - O valor de 0.83 está próximo a 1 o que indica uma forte correlação entre as duas variáveis.
 
@@ -149,4 +155,148 @@ ggplot(dados_1, aes(x = PIB_Log, y = Expectativa_Saudavel_de_Vida_ao_Nascer)) +
         axis.text = element_text(size = 12),
         axis.title = element_text(size = 14, face = "bold"))
 
+
+
+
+# Pergunta 2
+
+# - Existe uma correlação entre a escala de vida e a conscientização do público em geral sobre a corrupção
+#   nos negócios e no governo ? Qual a correlação entre essas duas variáveis ?
+
+# Análise Exploratória Específica
+dados_2 <- dados %>% 
+  select(Codigo,Pais,Ano,Indice_de_Felicidade,Percepcao_de_Corrupcao)
+
+colSums(is.na(dados_2))
+dados_2 <- na.omit(dados_2)
+dados_2$Ano <- as.factor(dados_2$Ano)
+
+# Sumário estatístico
+summary(dados_2)
+
+
+# Verificando a Correlação de Pearson entre duas variáveis (Indice_de_Felicidade e Percepcao_de_Corrupcao)
+cor(dados_2$Indice_de_Felicidade, dados_2$Percepcao_de_Corrupcao, method = "pearson")  # -0.4378447
+
+# - O valor de -0.43 indica uma correlação negativa moderada entre as duas variáveis.
+#   Isso significa que, em geral, à medida que o índice de felicidade aumenta, a percepção de corrupção tende a diminuir, e vice-versa.
+
+
+# Criar gráfico de dispersão
+ggplot(dados_2, aes(x = Indice_de_Felicidade, y = Percepcao_de_Corrupcao)) +
+  geom_point() +
+  labs(title = "Correlação entre Índice de Felicidade e Percepção de Corrupção",
+       x = "Índice de Felicidade",
+       y = "Percepção de Corrupção") +
+  theme_minimal()
+
+# Criar gráfico de dispersão aprimorado
+ggplot(dados_2, aes(x = Indice_de_Felicidade, y = Percepcao_de_Corrupcao)) +
+  geom_point(color = "#4C72B0", size = 3, alpha = 0.7) +
+  labs(title = "Correlação entre Índice de Felicidade e Percepção de Corrupção",
+       x = "Índice de Felicidade",
+       y = "Percepção de Corrupção") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "bold"))
+
+# Criar gráfico de dispersão com linha de correlação
+ggplot(dados_2, aes(x = Indice_de_Felicidade, y = Percepcao_de_Corrupcao)) +
+  geom_point(color = "#4C72B0", size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#DD8452", linewidth = 1.5) +
+  labs(title = "Correlação entre Índice de Felicidade e Percepção de Corrupção",
+       x = "Índice de Felicidade",
+       y = "Percepção de Corrupção") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "bold"))
+
+
+
+
+# Pergunta 3
+
+# - O aumento na escala de vida tem algum efeito na média de felicidade entre o público em geral ?
+#   Qual a relação entre essas duas variáveis ?
+
+# Análise Exploratória Específica
+dados_3 <- dados %>% 
+  select(Codigo,Pais,Ano,Indice_de_Felicidade,Expectativa_Saudavel_de_Vida_ao_Nascer)
+
+colSums(is.na(dados_3))
+dados_3 <- na.omit(dados_3)
+dados_3$Ano <- as.factor(dados_3$Ano)
+
+# Sumário estatístico
+summary(dados_3)
+
+# Verificando a Correlação de Pearson entre duas variáveis (Indice_de_Felicidade e Percepcao_de_Corrupcao)
+cor(dados_3$Indice_de_Felicidade, dados_3$Expectativa_Saudavel_de_Vida_ao_Nascer, method = "pearson")  # 0.724329
+
+# - O valor de correlação de aproximadamente 0.724 indica uma correlação positiva forte entre essas duas variáveis.
+
+
+# Criar gráfico de dispersão
+ggplot(dados_3, aes(x = Expectativa_Saudavel_de_Vida_ao_Nascer, y = Indice_de_Felicidade)) +
+  geom_point() +
+  labs(title = "Correlação entre Expectativa de Vida e Índice de Felicidade",
+       x = "Expectativa de Vida ao Nascer",
+       y = "Índice de Felicidade") +
+  theme_minimal()
+
+# Criar gráfico de dispersão aprimorado
+ggplot(dados_3, aes(x = Expectativa_Saudavel_de_Vida_ao_Nascer, y = Indice_de_Felicidade)) +
+  geom_point(color = "#4C72B0", size = 3, alpha = 0.7) +
+  labs(title = "Correlação entre Expectativa de Vida e Índice de Felicidade",
+       x = "Expectativa de Vida ao Nascer",
+       y = "Índice de Felicidade") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "bold"))
+
+# Criar gráfico de dispersão com linha de correlação
+ggplot(dados_3, aes(x = Expectativa_Saudavel_de_Vida_ao_Nascer, y = Indice_de_Felicidade)) +
+  geom_point(color = "#4C72B0", size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#DD8452", linewidth = 1.5) +
+  labs(title = "Correlação entre Expectativa de Vida e Índice de Felicidade",
+       x = "Expectativa de Vida ao Nascer",
+       y = "Índice de Felicidade") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "bold"))
+
+
+
+# Pergunta 4
+
+# - O país com o menor índice de suporte social tem maior percepção de corrupção em relação às empresas e
+#   ao governo no páis ?
+
+# Encontrar o índice do país com o menor índice de suporte social
+indice_menor_suporte_social <- which.min(dados$Suporte_Social)
+
+# Extrair informações sobre o país com o menor índice de suporte social
+pais_menor_suporte_social <- dados[indice_menor_suporte_social, ]
+
+# Exibir informações sobre o país
+print(pais_menor_suporte_social)
+
+# Extrair a percepção de corrupção desse país
+percepcao_corrupcao_menor_suporte <- pais_menor_suporte_social$Percepcao_de_Corrupcao
+percepcao_corrupcao_menor_suporte  # 0.859073
+
+# Comparar a percepção de corrupção com a média das percepções de corrupção
+media_perc_corrupcao <- mean(dados$Percepcao_de_Corrupcao, na.rm = TRUE)
+media_perc_corrupcao  # 0.7556783
+
+# Exibir a comparação
+if (percepcao_corrupcao_menor_suporte > media_perc_corrupcao) {
+  cat("O país com o menor índice de suporte social tem uma percepção de corrupção maior do que a média.")
+} else {
+  cat("O país com o menor índice de suporte social não tem uma percepção de corrupção maior do que a média.")
+}
 
