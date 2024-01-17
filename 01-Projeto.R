@@ -281,15 +281,13 @@ indice_menor_suporte_social <- which.min(dados$Suporte_Social)
 
 # Extrair informações sobre o país com o menor índice de suporte social
 pais_menor_suporte_social <- dados[indice_menor_suporte_social, ]
-
-# Exibir informações sobre o país
-print(pais_menor_suporte_social)
+pais_menor_suporte_social
 
 # Extrair a percepção de corrupção desse país
 percepcao_corrupcao_menor_suporte <- pais_menor_suporte_social$Percepcao_de_Corrupcao
 percepcao_corrupcao_menor_suporte  # 0.859073
 
-# Comparar a percepção de corrupção com a média das percepções de corrupção
+# Obter a média da percepção de corrupção de todos os países
 media_perc_corrupcao <- mean(dados$Percepcao_de_Corrupcao, na.rm = TRUE)
 media_perc_corrupcao  # 0.7556783
 
@@ -300,3 +298,33 @@ if (percepcao_corrupcao_menor_suporte > media_perc_corrupcao) {
   cat("O país com o menor índice de suporte social não tem uma percepção de corrupção maior do que a média.")
 }
 
+
+# Pergunta 5
+
+# - Pessoas generosas são mais felizes ?
+
+# Análise Exploratória Específica
+dados_5 <- dados %>% 
+  select(Pais, Indice_de_Felicidade, Generosidade)
+head(dados_5)
+
+colSums(is.na(dados_5))
+dados_5 <- na.omit(dados_5)
+
+# Verificando a Correlação de Pearson entre duas variáveis (Indice_de_Felicidade e Percepcao_de_Corrupcao)
+cor(dados_5$Indice_de_Felicidade, dados_5$Generosidade, method = "pearson")  # 0.2247181
+
+# - O valor de correlação de aproximadamente 0.23 indica uma correlação fraca entre essas duas variáveis.
+
+
+# Criar gráfico de dispersão com linha de correlação
+ggplot(dados_5, aes(x = Generosidade, y = Indice_de_Felicidade)) +
+  geom_point(color = "#4C72B0", size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "#DD8452", linewidth = 1.5) +
+  labs(title = "Correlação entre Generosidade e Índice de Felicidade",
+       x = "Generosidade",
+       y = "Índice de Felicidade") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "bold"))
