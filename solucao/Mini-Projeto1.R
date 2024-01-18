@@ -279,4 +279,3 @@ cor.test(df_medias$IndicadorGenerosidade, df_medias$IndicadorEmocoesPositivas, m
 
 # Fim
 
-
